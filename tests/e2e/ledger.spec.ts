@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { test, expect, type Page } from '@playwright/test';
+import sharp from 'sharp';
 
 function readOtp(phone: string): string | undefined {
   const logs = execFileSync('docker', ['compose', 'logs', '--no-log-prefix', '--no-color', 'api'], {
@@ -17,7 +18,13 @@ function readOtp(phone: string): string | undefined {
       }
     })[0];
 }
-async function createEntry(page: Page, friend: string, amount: string, dueDate: string) {
+async function createEntry(
+  page: Page,
+  friend: string,
+  amount: string,
+  dueDate: string,
+  withReceipt = false,
+) {
   await page.getByRole('button', { name: '+ Add entry', exact: true }).click();
   await page.getByRole('textbox', { name: 'Friend’s name' }).fill(friend);
   await page.getByRole('textbox', { name: 'Amount (INR)', exact: true }).fill(amount);
@@ -35,6 +42,17 @@ async function createEntry(page: Page, friend: string, amount: string, dueDate: 
   }
   await page.getByRole('button', { name: `Select ${dueDate}`, exact: true }).click();
   await expect(page.getByRole('button', { name: 'Close calendar', exact: true })).toHaveCount(0);
+  if (withReceipt) {
+    const png = await sharp({ create: { width: 32, height: 32, channels: 3, background: 'white' } })
+      .png()
+      .toBuffer();
+    const chooser = page.waitForEvent('filechooser');
+    await page.getByRole('button', { name: 'Attach receipt photo', exact: true }).click();
+    await (await chooser).setFiles({ name: 'receipt.png', mimeType: 'image/png', buffer: png });
+    await expect(
+      page.getByRole('img', { name: 'Selected receipt preview', exact: true }),
+    ).toBeVisible();
+  }
   await page.getByRole('button', { name: 'Save entry', exact: true }).click();
   await expect(page.getByText(friend, { exact: true })).toBeVisible();
 }
@@ -83,7 +101,10 @@ test('login, validation, entries, overdue, repay, persistence and logout', async
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
-  await createEntry(page, 'Aditi Sharma', '1250.50', yesterday);
+  await createEntry(page, 'Aditi Sharma', '1250.50', yesterday, true);
+  await page.getByRole('button', { name: 'View receipt for Aditi Sharma', exact: true }).click();
+  await expect(page.getByRole('img', { name: 'Receipt photo', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Close receipt', exact: true }).click();
   await createEntry(page, 'Rohan Mehta', '500', tomorrow);
   await expect(page.getByText('₹1,750.50').first()).toBeVisible();
   await page.getByRole('tab', { name: 'Overdue', exact: true }).click();

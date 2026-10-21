@@ -86,6 +86,12 @@ Added a first-launch introduction using the existing Manrope typography, green p
 
 Next and Back navigate locally; Skip and Get started save completion through a small platform storage module. Native uses SecureStore and web uses localStorage. Storage failures leave login accessible. Authenticated sessions go directly to the ledger. To preview again in development, remove `miniledger.onboarding.v1` from the corresponding store; signing out alone does not reset completed onboarding. Browser end-to-end coverage walks both pages, returns with Back, finishes and reloads; a separate case covers Skip persistence. All four desktop/mobile-browser scenarios pass, along with TypeScript and lint. The demo recorder skips the introduction to preserve its existing walkthrough timing.
 
+### Expo 57 receipt upload fix
+
+The reported `Unsupported FormDataPart implementation` was traced to Expo's multipart encoder rejecting the native URI descriptor. `ApiClient.create` now appends an `expo-file-system` File, and the SDK-compatible package is a direct mobile dependency. Browser file uploads and JSON-only saves retain their existing behavior.
+
+Regression tests use the installed Expo FormData patch and encoder, mocking only OS file access and the network. They reproduce the rejected old part and verify binary bytes, filename, content type, loan fields and authentication in the fixed request. All 28 unit tests pass. Desktop and phone-sized browser scenarios also attach an actual PNG, save the entry and reopen its stored receipt. TypeScript and lint pass. Physical-device receipt selection and upload still require confirmation in Expo Go.
+
 1. Open the app and review the code with `arch.md` before the interview.
 2. Run Expo on a compatible Android/iOS device if a native demonstration is required.
 3. Publish this source directory to the intended GitHub repository; verify CI on that remote.

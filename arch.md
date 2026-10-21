@@ -93,6 +93,8 @@ The injected clock makes expiry and due-date tests deterministic. JWT signing us
 
 ### Create a loan with a receipt
 
+The mobile client appends an `expo-file-system` `File` referencing the picked image to FormData. Expo 57 installs its own global fetch, whose multipart encoder reads file bytes and rejects the old React Native `{ uri, name, type }` descriptor. Web continues to append the browser File/Blob. The client leaves Content-Type unset for multipart requests so fetch supplies the matching boundary; requests without a receipt remain JSON. The dependency is declared directly with the SDK-compatible version.
+
 Authentication runs before multipart parsing. Multer applies file, field and part limits. The route validates ordinary fields. The service normalizes the optional image before inserting one row containing the entry and photo. A rejected image therefore creates no entry. Sharp decodes the image, checks its actual format, caps input pixels, applies rotation, resizes inside 1600×1600 and writes JPEG without original EXIF metadata. Database byte limits provide a second guard.
 
 ### Mark repaid and refresh totals
@@ -204,7 +206,7 @@ File paths below are relative to `apps/mobile`.
 | API client → `summary`                                                               | Fetches totals                                                                         | Keeps money calculation on the server                             |
 | API client → `repay`                                                                 | Sends PATCH for a selected UUID                                                        | Explicit state transition                                         |
 | API client → `receipt`                                                               | Fetches an authorized photo data URI                                                   | No unauthenticated image endpoint                                 |
-| API client → `create`                                                                | Sends JSON without a photo or multipart with browser Blob/native URI                   | Isolates the one platform-specific upload detail                  |
+| API client → `create`                                                                | Sends JSON without a photo or multipart with a browser Blob/native Expo File           | Uses file bytes supported by Expo 57's multipart encoder          |
 | `src/lib/format.ts` → `money`                                                        | Formats a decimal string as INR                                                        | Consistent presentation; no business arithmetic                   |
 | Format → `displayDate`                                                               | Renders date-only values in UTC                                                        | Prevents timezone shifts to the previous day                      |
 | Format → `todayUtc`                                                                  | Returns the default due date                                                           | Form defaults agree with API date semantics                       |

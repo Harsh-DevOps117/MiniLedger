@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { File } from 'expo-file-system';
 import type { ApiErrorBody, CreateLoanInput, Loan, Session, Summary } from '@miniledger/contracts';
 import type { ImagePickerAsset } from 'expo-image-picker';
 
@@ -80,12 +81,8 @@ export class ApiClient {
       const blob = receipt.file ?? (await (await fetch(receipt.uri)).blob());
       data.append('receipt', blob, receipt.fileName ?? 'receipt.jpg');
     } else {
-      // React Native's FormData accepts a URI descriptor instead of a browser Blob.
-      data.append('receipt', {
-        uri: receipt.uri,
-        name: receipt.fileName ?? 'receipt.jpg',
-        type: receipt.mimeType ?? 'image/jpeg',
-      } as unknown as Blob);
+      // Expo 57's fetch reads File bytes; legacy { uri, name, type } parts are unsupported.
+      data.append('receipt', new File(receipt.uri));
     }
     return this.request<Loan>('/loans', { method: 'POST', body: data });
   }
