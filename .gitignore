@@ -1,0 +1,50 @@
+# Dependencies and generated builds (all workspaces)
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Expo / Metro local state and generated native projects
+.expo/
+expo-env.d.ts
+.metro-cache/
+/apps/mobile/android/
+/apps/mobile/ios/
+*.apk
+*.aab
+*.ipa
+
+# Local configuration; keep safe setup templates in Git
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Native signing credentials
+*.jks
+*.keystore
+*.p8
+*.p12
+*.mobileprovision
+
+# Test output, coverage, screenshots and demo recordings
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+artifacts/
+
+# Logs and tool caches
+*.log
+.eslintcache
+.npm/
+
+# Local editor and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "MiniLedger",
+    "slug": "miniledger",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "miniledger",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.miniledger.app"
+    },
+    "android": {
+      "package": "com.miniledger.app",
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "web": {
+      "bundler": "metro",
+      "name": "MiniLedger",
+      "shortName": "MiniLedger"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow MiniLedger to attach receipt photos to your entries.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      "expo-font",
+      "expo-status-bar"
+    ]
+  }
+}

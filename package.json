@@ -1,0 +1,40 @@
+{
+  "name": "miniledger",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "build:shared": "npm run build -w @miniledger/contracts",
+    "build": "npm run build:shared && npm run build -w @miniledger/api",
+    "dev:api": "npm run build:shared && npm run dev -w @miniledger/api",
+    "dev:mobile": "npm run build:shared && npm run start -w @miniledger/mobile",
+    "dev:web": "npm run build:shared && npm run web -w @miniledger/mobile",
+    "typecheck": "npm run build:shared && npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run build:shared && vitest run",
+    "test:integration": "npm run build:shared && vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "db:migrate": "npm run build:shared && npm run migrate -w @miniledger/api",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "demo:record": "node scripts/record-demo.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
+    "@types/node": "26.6.5",
+    "eslint": "10.13.0",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0",
+    "vitest": "5.0.5"
+  }
+}

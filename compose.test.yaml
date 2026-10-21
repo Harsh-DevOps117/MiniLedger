@@ -1,0 +1,15 @@
+name: miniledger-tests
+services:
+  db-test:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: miniledger
+      POSTGRES_PASSWORD: miniledger_test
+      POSTGRES_DB: miniledger_test
+    ports: ['127.0.0.1:${TEST_DB_PORT:-5433}:5432']
+    tmpfs: ['/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U miniledger -d miniledger_test']
+      interval: 2s
+      timeout: 2s
+      retries: 15
