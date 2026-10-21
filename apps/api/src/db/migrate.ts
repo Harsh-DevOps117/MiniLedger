@@ -2,8 +2,8 @@ import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { Pool } from 'pg';
-import { createPool, inTransaction } from './pool';
 import { readConfig } from '../config';
+import { createPool, inTransaction } from './pool';
 
 export async function migrate(pool: Pool): Promise<void> {
   await inTransaction(pool, async (client) => {

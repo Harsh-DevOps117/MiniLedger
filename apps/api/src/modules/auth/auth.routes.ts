@@ -1,6 +1,6 @@
+import { requestOtpSchema, verifyOtpSchema } from '@miniledger/contracts';
 import { Router } from 'express';
 import { rateLimit } from 'express-rate-limit';
-import { requestOtpSchema, verifyOtpSchema } from '@miniledger/contracts';
 import type { AuthService } from './auth.service';
 
 export function authRouter(service: AuthService, rateLimits: boolean) {
